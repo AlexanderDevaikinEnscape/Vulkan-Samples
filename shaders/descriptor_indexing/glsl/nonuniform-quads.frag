@@ -65,7 +65,15 @@ void main()
     */
 
     // sampler2D is such a constructor, so we must add nonuniformEXT afterwards.
-    out_frag_color = texture(nonuniformEXT(sampler2D(Textures[in_texture_index], ImmutableSampler)), in_uv);
+	
+	// To stop crashing either use sampled data in output:
+	// out_frag_color = vec4(1.0 * color);
+	// or sample only the first texture in array:
+	// vec4 color = texture(nonuniformEXT(sampler2D(Textures[0], ImmutableSampler)), in_uv);
+	vec4 color = texture(nonuniformEXT(sampler2D(Textures[in_texture_index], ImmutableSampler)), in_uv);
+	if (color.r < 0.5) discard;
+	out_frag_color = vec4(1.0);
+
     // For all other use cases of nonuniformEXT however, we can write code like:
     // uniform UBO { vec4 data; } UBOs[]; vec4 foo = UBOs[nonuniformEXT(index)].data;
     // buffer SSBO { vec4 data; } SSBOs[]; vec4 foo = SSBOs[nonuniformEXT(index)].data;
